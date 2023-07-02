@@ -1,7 +1,7 @@
 #Auto-updating formatting for Arma3 Mods with filter
 #Made by: Slyrex/Slyrem
-# v5.1
-# Update log: v1.0 - Initial release v2.0 - Added GUI v3.0 - Added save settings v4.0 - Added load settings v5.0 - Added HTML parsing of mod files V5.1 - Added export IDS to steamcmd script
+# v6.0
+# Update log: v1.0 - Initial release v2.0 - Added GUI v3.0 - Added save settings v4.0 - Added load settings v5.0 - Added HTML parsing of mod files V5.1 - Added export IDS to steamcmd script V6.0 - Added lowercase all files in a directory, added checkbox to add @ to mod names in export, changed steamcmd export to make it into a scriptfile so it happens in one go
 import os
 import tkinter as tk
 from tkinter import messagebox, filedialog
@@ -51,7 +51,7 @@ select_parameter_file_button.pack(padx=10, pady=10)
 # List of mods
 listbox = tk.Listbox(window, selectmode=tk.MULTIPLE)
 listbox.pack(padx=10, pady=10)
-
+# Function to refresh the listbox
 def refresh_mod_list():
     # Clear the listbox
     listbox.delete(0, tk.END)
@@ -72,6 +72,7 @@ def refresh_mod_list():
 
 refresh_mod_list()
 
+# Function to update the parameter file
 def update_param_file():
     # Select mods
     selected_mods = [listbox.get(i) for i in listbox.curselection()]
@@ -80,16 +81,19 @@ def update_param_file():
     filtered_mods = [mod for mod in settings["mods"] if mod not in selected_mods]
     
     # Formatting for the parameters file
-    formatted_mods = ';'.join(['@' + mod for mod in filtered_mods])
+    if append_at_var.get():
+        formatted_mods = ';'.join(['@' + mod for mod in filtered_mods])
+    else:
+        formatted_mods = ';'.join([mod for mod in filtered_mods])
     
     # Read params file
     with open(settings["path_to_parameter_file"], 'r') as file:
         lines = file.readlines()
     
-    # Find mods= line and update it
+    # Find -mod= line and update it
     for i, line in enumerate(lines):
-        if line.startswith('mods='):
-            lines[i] = 'mods=' + formatted_mods + '\n'
+        if line.startswith('-mod='):
+            lines[i] = '-mod="' + formatted_mods + '"\n'
     
     # Write the formattings back to the params file
     with open(settings["path_to_parameter_file"], 'w') as file:
@@ -102,6 +106,18 @@ def update_param_file():
     # Show a message box to confirm
     messagebox.showinfo("UwU We have gone and done it", "The parameter file has been updated successfully!")
 
+# Function to lowercase all files in a directory
+def lowercase_all_files():
+    directory = filedialog.askdirectory()
+
+    for filename in os.listdir(directory):
+        lowercase_filename = filename.lower()
+        try:
+            os.rename(os.path.join(directory, filename), os.path.join(directory, lowercase_filename))
+        except PermissionError:
+            messagebox.showerror("Error", f"Couldn't rename {filename} because it is in use.")
+
+# Function to parse HTML file
 def parse_html():
     # Select HTML file
     html_file_path = filedialog.askopenfilename(filetypes=[('HTML Files', '*.html')])
@@ -162,6 +178,15 @@ def parse_html():
 # Parse HTML Button
 parse_button = tk.Button(window, text="Parse HTML File", command=parse_html)
 parse_button.pack(padx=10, pady=10)
+
+# Lowercase all files in a directory button
+lowercase_button = tk.Button(window, text="Lowercase All Files in Folder", command=lowercase_all_files)
+lowercase_button.pack(padx=10, pady=10)
+
+# Checkbox to add @ to mod names
+append_at_var = tk.BooleanVar(value=False)
+append_at_checkbox = tk.Checkbutton(window, text='Add "@" to mod names in export', variable=append_at_var)
+append_at_checkbox.pack()
 
 # Update Param File Button
 update_button = tk.Button(window, text="Update Parameter File", command=update_param_file)
