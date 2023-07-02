@@ -12,4 +12,11 @@
 
     v4 - added choose your own path for param file and mods folder, save settings for path functionality and mods folder and will load and remember them
 
+    v5 - Added HTML parsing to extract the mod ids and mod names from a HTML modlist to make it easier for server admins to move to a new modlist.
+
     More to come, please request suggestions to make your life easier.
+
+
+To run this file, make sure you have Python installed to PATH https://www.python.org/downloads/
+
+And open a commandline and type: pip install beautifulsoup4
