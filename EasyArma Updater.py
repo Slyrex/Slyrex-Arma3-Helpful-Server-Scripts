@@ -1,7 +1,7 @@
 #Auto-updating formatting for Arma3 Mods with filter
 #Made by: Slyrex/Slyrem
-# v5.0
-# Update log: v1.0 - Initial release v2.0 - Added GUI v3.0 - Added save settings v4.0 - Added load settings v5.0 - Added HTML parsing of mod files
+# v5.1
+# Update log: v1.0 - Initial release v2.0 - Added GUI v3.0 - Added save settings v4.0 - Added load settings v5.0 - Added HTML parsing of mod files V5.1 - Added export IDS to steamcmd script
 import os
 import tkinter as tk
 from tkinter import messagebox, filedialog
@@ -142,12 +142,22 @@ def parse_html():
                 elif ids:
                     file.write(f"{id}\n")
 
+    # Function to save results as a steamcmd batch script
+    def save_steamcmd_script():
+        save_file_path = filedialog.asksaveasfilename(defaultextension=".bat")
+        with open(save_file_path, 'w') as file:
+            for name, id in results:
+                file.write(f"steamcmd +login anonymous +workshop_download_item 107410 {id} +quit\n")
+
     # Buttons to save results
     save_both_button = tk.Button(result_window, text="Save Names + IDs", command=lambda: save_results(True, True))
     save_both_button.pack(padx=10, pady=10)
 
     save_ids_button = tk.Button(result_window, text="Save IDs Only", command=lambda: save_results(False, True))
     save_ids_button.pack(padx=10, pady=10)
+
+    save_steamcmd_button = tk.Button(result_window, text="Save as SteamCMD Script", command=save_steamcmd_script)
+    save_steamcmd_button.pack(padx=10, pady=10)
 
 # Parse HTML Button
 parse_button = tk.Button(window, text="Parse HTML File", command=parse_html)

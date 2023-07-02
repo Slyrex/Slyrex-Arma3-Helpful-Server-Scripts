@@ -14,6 +14,8 @@
 
     v5 - Added HTML parsing to extract the mod ids and mod names from a HTML modlist to make it easier for server admins to move to a new modlist.
 
+    v5.1 - Added parse modlist html results to steamcmd batch file will now auto-format all mods in a mod list like steamcmd +login anonymous +workshop_download_item 107410 WORKSHOPID +quit
+
     More to come, please request suggestions to make your life easier.
 
 
