@@ -26,13 +26,6 @@
 To run this file, make sure you have Python installed to PATH https://www.python.org/downloads/
 
 And open a commandline and type: pip install beautifulsoup4
-<<<<<<< HEAD
 Then run the script from commandline
 
 > This project is very much a WIP and I'm using it as a practice tool to learn python
-=======
-and launch it from command line
-
-
-> Note this project is very much a WIP and I'm using it as a practice tool to learn python.
->>>>>>> f43199ea2b59869cc0d68fa3c1b300de89ddbb8b
