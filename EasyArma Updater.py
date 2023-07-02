@@ -1,11 +1,12 @@
 #Auto-updating formatting for Arma3 Mods with filter
 #Made by: Slyrex/Slyrem
-# v4.0
-# Update log: v1.0 - Initial release v2.0 - Added GUI v3.0 - Added save settings v4.0 - Added load settings
+# v5.0
+# Update log: v1.0 - Initial release v2.0 - Added GUI v3.0 - Added save settings v4.0 - Added load settings v5.0 - Added HTML parsing of mod files
 import os
 import tkinter as tk
 from tkinter import messagebox, filedialog
 import json
+from bs4 import BeautifulSoup
 
 # Settings file to remember paths and unfiltered mods
 script_directory = os.path.dirname(os.path.abspath(__file__))
@@ -101,7 +102,58 @@ def update_param_file():
     # Show a message box to confirm
     messagebox.showinfo("UwU We have gone and done it", "The parameter file has been updated successfully!")
 
-# Create a button that will call the update_param_file function when clicked
+def parse_html():
+    # Select HTML file
+    html_file_path = filedialog.askopenfilename(filetypes=[('HTML Files', '*.html')])
+    
+    with open(html_file_path, 'r') as file:
+        soup = BeautifulSoup(file.read(), 'html.parser')
+    
+    # Find mods
+    mods = soup.find_all('tr', {'data-type': 'ModContainer'})
+    
+    # Extract the names and IDs
+    results = []
+    for mod in mods:
+        name = mod.find('td', {'data-type': 'DisplayName'}).text
+        link = mod.find('a', {'data-type': 'Link'})['href']
+        id = link.split('=')[-1]  # Split the URL on '=' and take the last part
+        results.append((name, id))
+
+    # Window
+    result_window = tk.Toplevel(window)
+    result_window.title("Parse Results")
+
+    # Results
+    result_text = tk.Text(result_window, wrap=tk.WORD)
+    result_text.pack(padx=10, pady=10)
+
+    # Insert the results
+    for name, id in results:
+        result_text.insert(tk.END, f"Name: {name}, ID: {id}\n")
+
+    # Save results to a text file
+    def save_results(names=True, ids=True):
+        save_file_path = filedialog.asksaveasfilename(defaultextension=".txt")
+        with open(save_file_path, 'w') as file:
+            for name, id in results:
+                if names and ids:
+                    file.write(f"{name} {id}\n")
+                elif ids:
+                    file.write(f"{id}\n")
+
+    # Buttons to save results
+    save_both_button = tk.Button(result_window, text="Save Names + IDs", command=lambda: save_results(True, True))
+    save_both_button.pack(padx=10, pady=10)
+
+    save_ids_button = tk.Button(result_window, text="Save IDs Only", command=lambda: save_results(False, True))
+    save_ids_button.pack(padx=10, pady=10)
+
+# Parse HTML Button
+parse_button = tk.Button(window, text="Parse HTML File", command=parse_html)
+parse_button.pack(padx=10, pady=10)
+
+# Update Param File Button
 update_button = tk.Button(window, text="Update Parameter File", command=update_param_file)
 update_button.pack(padx=10, pady=10)
 
