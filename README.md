@@ -20,6 +20,8 @@
     Added lowercase all files in folder in the fringe cases of copy and pasting while steamcmd is down.
     few other bug fixes.
 
+    v7.0 GUI Overhaul to make it more clean.
+
     More to come, please request suggestions to make your life easier.
 
 # Installation
